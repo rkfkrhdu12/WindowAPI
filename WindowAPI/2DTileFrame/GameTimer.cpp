@@ -20,7 +20,7 @@ void GameTimer::Init()
 	__int64 curTime;
 	// 현재까지의 cpu 진동수 ?
 	QueryPerformanceCounter((LARGE_INTEGER*)&curTime);
-
+	
 	_deltaTime = 0.0f;
 	_prevTime = curTime;
 }
