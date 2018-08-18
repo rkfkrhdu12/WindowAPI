@@ -73,6 +73,10 @@
     <IncludePath>C:\Users\Atents\Documents\week_2dtileframe_v3-master\SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\Atents\Documents\week_2dtileframe_v3-master\SDK\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>../SDK/Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>../SDK/Lib/x86/;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
