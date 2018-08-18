@@ -1,0 +1,7 @@
+﻿  main.cpp
+  GameTimer.cpp
+c:\users\atents\documents\week_2dtileframe_v3-master\2dtileframe\gametimer.cpp(9): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\atents\documents\week_2dtileframe_v3-master\2dtileframe\gametimer.cpp(23): warning C4244: '=': '__int64'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\atents\documents\week_2dtileframe_v3-master\2dtileframe\gametimer.cpp(32): warning C4244: '=': '__int64'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
+  2DTileFrame.vcxproj -> C:\Users\Atents\Documents\week_2dtileframe_v3-master\x64\Debug\2DTileFrame.exe
