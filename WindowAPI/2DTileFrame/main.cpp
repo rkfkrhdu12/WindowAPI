@@ -1,7 +1,8 @@
 #include <Windows.h>
 
-#include "GameTimer.h"
 #include <d3dx9.h>
+#include "Sprite.h"
+#include "GameTimer.h"
 
 // GameGraphicSprite https://opengameart.org/
 
@@ -136,40 +137,11 @@ int WINAPI WinMain(
 	if (FAILED(hr)) { return 0; }
 
 	// 이미지 로드
-	D3DCOLOR textureColor	 = D3DCOLOR_ARGB(255, 255, 255, 255);
-
 	LPCWSTR fileName		 = L"../resource/image/Character_Sprite.png";
 
-	D3DXIMAGE_INFO texInfo;
-	hr = D3DXGetImageInfoFromFile(fileName, &texInfo);
-	if (FAILED(hr)) { return 0; }
-
-	RECT textureRect;
-	int walkAni			 = 1;	// left idle right
-	int dirAni			 = 0;	// bottom left right top
-	int texWidthBlock	 = texInfo.Width / (3 * 4);
-	int texHeightBlock	 = texInfo.Height / (4 * 2);
-	textureRect.left	 = texWidthBlock * walkAni;
-	textureRect.top		 = texHeightBlock * dirAni;
-	textureRect.right	 = textureRect.left + texWidthBlock;
-	textureRect.bottom	 = textureRect.top + texHeightBlock;
-
-	//  이미지 데이터 로드
-	IDirect3DTexture9* textureDX;
-	hr = D3DXCreateTextureFromFileEx(
-		dxDevice, fileName,
-		texInfo.Width, texInfo.Height,
-		1,
-		0,
-		D3DFMT_UNKNOWN,
-		D3DPOOL_DEFAULT,
-		D3DX_DEFAULT, D3DX_DEFAULT,
-		D3DCOLOR_ARGB(255, 255, 255, 255),
-		&texInfo,
-		NULL,
-		&textureDX);
-	if (FAILED(hr)) { return 0; }
-
+	// Sprite
+	Sprite* sprite = new Sprite();
+	sprite->Init(dxDevice,fileName, spriteDX);
 
 	//// 이 윈도우가 꺼지지 않고 유지되도록 처리
 	//MSG msg;
@@ -219,12 +191,8 @@ int WINAPI WinMain(
 				// Scene 작업 : 게임 화면과 관련된 모든 작업 공간
 				spriteDX->Begin(D3DXSPRITE_ALPHABLEND);
 
-				// 2D이미지(Texture) 출력 공간 
-				spriteDX->Draw(
-					textureDX,			// 그릴 텍스쳐 정보가 담긴 인터페이스
-					&textureRect,		//  원본 이미지에서 그릴 프레임
-					NULL, NULL,
-					textureColor);		// 스프라이트의 색상과 알파채널(투명값)
+				// 스프라이트 렌더
+				sprite->Render();
 
 				spriteDX->End();
 				
@@ -242,12 +210,9 @@ int WINAPI WinMain(
 						{
 							// 디바이스와 그 외 디바이스를 통해 생성된 모든 리소스를 복구 (spriteDX, textureDX)
 							// 기존에 만들어진 것들을 모두 리셋
-							if (textureDX)
-							{
-								textureDX->Release();
-								textureDX = 0;
-							}
-
+							
+							sprite->Release();
+							
 							// 새로 생성
 							direct3d = Direct3DCreate9(D3D_SDK_VERSION);
 							if (0 != direct3d)
@@ -258,7 +223,7 @@ int WINAPI WinMain(
 									hr = D3DXCreateSprite(dxDevice, &spriteDX);
 									if (SUCCEEDED(hr))
 									{
-										hr = D3DXCreateTextureFromFileEx(dxDevice, fileName, texInfo.Width, texInfo.Height, 1, 0, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, D3DCOLOR_ARGB(255, 255, 255, 255), &texInfo, 0, &textureDX);
+										sprite->Reset();
 									}
 								}
 							}
@@ -284,6 +249,18 @@ int WINAPI WinMain(
 	{
 		direct3d->Release();
 		direct3d = NULL;
+	}
+
+	// 텍스쳐 해제는 스프라이트가 파괴될때
+	/*if (textureDX)
+	{
+		textureDX->Release();
+		textureDX = 0;
+	}*/
+
+	if (sprite)
+	{
+		delete sprite;
 	}
 
 	return 0;
