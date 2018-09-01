@@ -11,7 +11,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
-		MessageBox(0, L"Hello World", L"Hello", MB_OK);
+		DestroyWindow(hWnd);
 		return 0;
 	case WM_KEYDOWN:
 		if (VK_ESCAPE == wParam) 
@@ -23,6 +23,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	}
+
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
@@ -34,55 +35,39 @@ int WINAPI WinMain(
 {
 	int width;
 	int height;
-	bool isWindow = true; // * WndStyle, D3DFORMAT
+	bool isWindow = true; // WndStyle, D3DFORMAT
 
 
-	if (isWindow)
-	{
-		width = 1280;
-		height = 768;
-	}
-	else
-	{
-		width = 1920;
-		height = 1080;
-	}
+	if (isWindow) { width = 1280; height = 768; }
+	else { width = 1920; height = 1080; }
 
 	// 윈도우 스타일을 만들고 윈도우 스타일 등록
 	WNDCLASS wc;
-
-	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = WndProc;	// 윈도우 프로시저 함수 등록
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(0, IDI_APPLICATION);
-	wc.hCursor = LoadCursor(0, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	wc.lpszMenuName = 0;
-	wc.lpszClassName = L"2DTileFrameWnd";			// 이 윈도우 스타일의 이름
+	wc.style			 = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc		 = WndProc;	// 윈도우 프로시저 함수 등록
+	wc.cbClsExtra		 = 0;
+	wc.cbWndExtra		 = 0;
+	wc.hInstance		 = hInstance;
+	wc.hIcon			 = LoadIcon(0, IDI_APPLICATION);
+	wc.hCursor			 = LoadCursor(0, IDC_ARROW);
+	wc.hbrBackground	 = (HBRUSH)GetStockObject(BLACK_BRUSH);
+	wc.lpszMenuName		 = 0;
+	wc.lpszClassName	 = L"2DTileFrameWnd";			// 이 윈도우 스타일의 이름
 	if (FALSE == RegisterClass(&wc)) { return 0; }
 
 
 	// isWindow == true 윈도우의 부가적인 요소를 제거
-	DWORD style; // *
-	if (isWindow)
-	{
-		style = WS_OVERLAPPEDWINDOW;
-	}
-	else
-	{
-		style = WS_EX_TOPMOST | WS_VISIBLE | WS_POPUP;
-	}
+	DWORD style;
+	if (isWindow) { style = WS_OVERLAPPEDWINDOW; }
+	else { style = WS_EX_TOPMOST | WS_VISIBLE | WS_POPUP; }
 
 
 	// 창 핸들(아이디)를 먼저 발급을 받자
 	HWND hWnd;
-
 	hWnd = CreateWindow(
 		L"2DTileFrameWnd",				// 사용할 윈도우 스타일 이름. OS에 등록 되어있음.
 		L"2D Tile Frame",
-		style,							// 윈도우 스타일 *
+		style,							// 윈도우 스타일 
 		CW_USEDEFAULT, CW_USEDEFAULT,	// 시작위치 :  x, y
 		width, height,					// 해상도. 너비/높이
 		0,								// 부모 창의 핸들. 사용 안함
@@ -112,36 +97,29 @@ int WINAPI WinMain(
 	// DirectX 한테          dxDevice			생성 요청
 
 	// 그래픽을 담당하는 direct
-	LPDIRECT3D9 direct3d;
+	IDirect3D9* direct3d;
 	direct3d = Direct3DCreate9(D3D_SDK_VERSION);
 	if (NULL == direct3d) { return 0; }
 
-	D3DFORMAT format; // *
-	if (isWindow)
-	{
-		format = D3DFMT_UNKNOWN; // 색상을 윈도우로 지정
-	}
-	else
-	{
-		format = D3DFMT_X8R8G8B8; // 전용 색상 포맷을 사용
-	}
+	D3DFORMAT format;
+	if (isWindow) { format = D3DFMT_UNKNOWN; } // 색상을 윈도우로 지정
+	else { format = D3DFMT_X8R8G8B8; } // 전용 색상 포맷을 사용
 
 	//Device를 생성하기전
 	//Device를 통해 화면을 어떻게 보여질지를 결정
 	D3DPRESENT_PARAMETERS d3dpp;
 	ZeroMemory(&d3dpp, sizeof(d3dpp));	// 메모리를 전부 0으로 초기화
-	d3dpp.BackBufferWidth = width;
-	d3dpp.BackBufferHeight = height;
-	d3dpp.BackBufferFormat = format;	// *
-	d3dpp.BackBufferCount = 1;			// 버퍼 갯수 
-	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	d3dpp.hDeviceWindow = hWnd;
-	d3dpp.Windowed = isWindow;
-	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+	d3dpp.BackBufferWidth		 = width;
+	d3dpp.BackBufferHeight		 = height;
+	d3dpp.BackBufferFormat		 = format;
+	d3dpp.BackBufferCount		 = 1;			// 버퍼 갯수 
+	d3dpp.SwapEffect			 = D3DSWAPEFFECT_DISCARD;
+	d3dpp.hDeviceWindow			 = hWnd;
+	d3dpp.Windowed				 = isWindow;
+	d3dpp.PresentationInterval	 = D3DPRESENT_INTERVAL_IMMEDIATE;
 
 	// Device 생성 요청
-	LPDIRECT3DDEVICE9 dxDevice;
-
+	IDirect3DDevice9* dxDevice;
 	HRESULT hr = direct3d->CreateDevice(
 		D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,						 // GPU에 접근
@@ -154,33 +132,30 @@ int WINAPI WinMain(
 	// Sprite COM 인터페이스 생성
 
 	ID3DXSprite* spriteDX;
-
 	hr = D3DXCreateSprite(dxDevice, &spriteDX);
 	if (FAILED(hr)) { return 0; }
 
 	// 이미지 로드
-	D3DCOLOR textureColor = D3DCOLOR_ARGB(255, 255, 255, 255);
+	D3DCOLOR textureColor	 = D3DCOLOR_ARGB(255, 255, 255, 255);
 
-	LPCWSTR fileName = L"../resource/image/Character_Sprite.png";
+	LPCWSTR fileName		 = L"../resource/image/Character_Sprite.png";
 
 	D3DXIMAGE_INFO texInfo;
-
 	hr = D3DXGetImageInfoFromFile(fileName, &texInfo);
 	if (FAILED(hr)) { return 0; }
 
 	RECT textureRect;
-	int walkAni = 0; // left idle right
-	int dirAni = 0; // bottom left right top
-	int texWidthBlock = texInfo.Width / (3 * 4);
-	int texHeightBlock = texInfo.Height / (4 * 2);
-	textureRect.left = texWidthBlock * walkAni;
-	textureRect.top = texHeightBlock * dirAni;
-	textureRect.right = textureRect.left + texWidthBlock;
-	textureRect.bottom = textureRect.top + texHeightBlock;
+	int walkAni			 = 1;	// left idle right
+	int dirAni			 = 0;	// bottom left right top
+	int texWidthBlock	 = texInfo.Width / (3 * 4);
+	int texHeightBlock	 = texInfo.Height / (4 * 2);
+	textureRect.left	 = texWidthBlock * walkAni;
+	textureRect.top		 = texHeightBlock * dirAni;
+	textureRect.right	 = textureRect.left + texWidthBlock;
+	textureRect.bottom	 = textureRect.top + texHeightBlock;
 
 	//  이미지 데이터 로드
 	IDirect3DTexture9* textureDX;
-
 	hr = D3DXCreateTextureFromFileEx(
 		dxDevice, fileName,
 		texInfo.Width, texInfo.Height,
@@ -204,10 +179,10 @@ int WINAPI WinMain(
 	//	DispatchMessage(&msg);	// 메시지 창에 배분을 요청한다.
 	//}
 
-	float fps = 60.0f;
-	float frameInterval = 1.0f / fps;
-	float frameTime = 0.0f;
-	float deltaTime;
+	float fps			 = 60.0f;
+	float frameInterval	 = 1.0f / fps;
+	float frameTime		 = 0.0f;
+	float deltaTime		 = 0.0f;
 
 	GameTimer gameTimer;
 	gameTimer.Init();
@@ -252,13 +227,49 @@ int WINAPI WinMain(
 					textureColor);		// 스프라이트의 색상과 알파채널(투명값)
 
 				spriteDX->End();
+				
+				// LostDevice Reset
+				{
+					// 디바이스 상태 확인
+					hr = dxDevice->TestCooperativeLevel();
+					if(FAILED(hr))	// 디바이스 상태에 문제확인
+					{
+						// 문제 종류 확인  세 종류 (고칠수없는상태, 고칠수있는상태, 고쳐진상태)
+						// 고칠수없는상태  고칠수있는 상태가 될때까지 대기(IDLE)
+						if (D3DERR_DEVICELOST == hr) { Sleep(100); }
+						// 고칠수있는상태  복구 시작
+						else if (D3DERR_DEVICENOTRESET == hr)
+						{
+							// 디바이스와 그 외 디바이스를 통해 생성된 모든 리소스를 복구 (spriteDX, textureDX)
+							// 기존에 만들어진 것들을 모두 리셋
+							if (textureDX)
+							{
+								textureDX->Release();
+								textureDX = 0;
+							}
+
+							// 새로 생성
+							direct3d = Direct3DCreate9(D3D_SDK_VERSION);
+							if (0 != direct3d)
+							{
+								hr = direct3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &dxDevice);
+								if (SUCCEEDED(hr))
+								{
+									hr = D3DXCreateSprite(dxDevice, &spriteDX);
+									if (SUCCEEDED(hr))
+									{
+										hr = D3DXCreateTextureFromFileEx(dxDevice, fileName, texInfo.Width, texInfo.Height, 1, 0, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, D3DCOLOR_ARGB(255, 255, 255, 255), &texInfo, 0, &textureDX);
+									}
+								}
+							}
+						}
+					}
+				} // lostDevice
 
 				dxDevice->EndScene();
 
 				// 채운 색을 모니터를 통해 보여준다.
 				dxDevice->Present(NULL, NULL, NULL, NULL);
-
-
 			}
 		}
 	}
