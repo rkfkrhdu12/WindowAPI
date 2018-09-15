@@ -176,8 +176,9 @@ int WINAPI WinMain(
 			gameTimer.Update();
 			deltaTime = gameTimer.GetDelta();
 
-			frameTime = frameTime + deltaTime;
+			sprite->Update(deltaTime);
 
+			frameTime = frameTime + deltaTime;
 			if (frameInterval <= frameTime)
 			{
 				frameTime = 0.0f;
