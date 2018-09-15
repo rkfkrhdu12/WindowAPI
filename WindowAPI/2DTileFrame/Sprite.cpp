@@ -2,6 +2,15 @@
 
 #include "Frame.h"
 
+#define WALK1 0
+#define IDLE 1
+#define WALK2 2
+
+#define Character0 0
+#define Character1 3
+#define Character2 6
+#define Character3 9
+
 Sprite::Sprite()
 {
 }
@@ -39,18 +48,36 @@ void Sprite::Init(IDirect3DDevice9* dxDevice, std::wstring fileName, ID3DXSprite
 	_frameIdx = 0;
 	_frameTime = 0;
 
+
 	int width = _texInfo.Width / (3 * 4);
 	int height = _texInfo.Height / (4 * 2);
 
-	D3DCOLOR textureColor = D3DCOLOR_ARGB(255, 255, 255, 255);
 	{
 		Frame* frame = new Frame();
-		frame->Init(_spriteDX, _textureDX, 0 * width, 0 * height, width, height, .5f, textureColor);
+		frame->Init(_spriteDX, _textureDX,
+			Character0+ WALK1, 0, width, height,
+			.3f, D3DCOLOR_ARGB(255, 255, 255, 255),1.0f);
 		_frameList.push_back(frame);
 	}
 	{
 		Frame* frame = new Frame();
-		frame->Init(_spriteDX, _textureDX, 2 * width, 0 * height, width, height, .5f, textureColor);
+		frame->Init(_spriteDX, _textureDX,
+			Character0+ WALK2, 0, width, height,
+			.3f, D3DCOLOR_ARGB(255, 255, 255, 255),1.0f);
+		_frameList.push_back(frame);
+	}
+	{
+		Frame* frame = new Frame();
+		frame->Init(_spriteDX, _textureDX,
+			Character1 + WALK1, 0, width, height,
+			.5f, D3DCOLOR_ARGB(255, 255, 0, 0), 2.0f);
+		_frameList.push_back(frame);
+	}
+	{
+		Frame* frame = new Frame();
+		frame->Init(_spriteDX, _textureDX,
+			Character1 + WALK2, 0, width, height,
+			.5f, D3DCOLOR_ARGB(255, 255, 0, 0), 2.0f);
 		_frameList.push_back(frame);
 	}
 }

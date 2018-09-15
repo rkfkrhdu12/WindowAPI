@@ -14,16 +14,20 @@ Frame::~Frame()
 {
 }
 
-void Frame::Init(ID3DXSprite* spriteDX, IDirect3DTexture9* textureDX, int left, int top, int width, int height, float frameInterval, D3DCOLOR textureColor)
+void Frame::Init(
+	ID3DXSprite* spriteDX, IDirect3DTexture9* textureDX,
+	int left, int top, int width, int height,
+	float frameInterval, D3DCOLOR textureColor, float scale)
 {	
 	_spriteDX				= spriteDX;
 	_textureDX				= textureDX;
 	_frameInterval			= frameInterval;
-	_width					= width;
-	_height					= height;
+	_scale					= scale;
+	_width					= width * _scale;
+	_height					= height * _scale;
 
-	_textureRect.left		= left;
-	_textureRect.top		= top;
+	_textureRect.left		= left * width;
+	_textureRect.top		= top * height;
 	_textureRect.right		= _textureRect.left + width;
 	_textureRect.bottom		= _textureRect.top + height;
 
@@ -37,10 +41,11 @@ void Frame::Reset()
 
 void Frame::Render()
 {
-	D3DXVECTOR2 scale		= D3DXVECTOR2(3.0f,3.0f);				// 확대/축소 값
-	D3DXVECTOR2 rotCenter	= D3DXVECTOR2(_width / 2, _height / 2); // 회전중심
+	
+	D3DXVECTOR2 scale		= D3DXVECTOR2(_scale, _scale);				// 확대/축소 값
+	D3DXVECTOR2 rotCenter	= D3DXVECTOR2((_width / 2), (_height / 2)); // 회전중심
 	float rot = 0;			//회전
-	D3DXVECTOR2 translate	= D3DXVECTOR2(-_width/2,-_height/2); // 이동
+	D3DXVECTOR2 translate	= D3DXVECTOR2(100.0f - _width / 2, 200.0f - _height); // 이동
 
 	D3DXMATRIX matrix; // 크기,회전,회전중심,회전각도,이동
 	D3DXMatrixTransformation2D(
